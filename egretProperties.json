@@ -1,0 +1,46 @@
+{
+  "engineVersion": "5.1.7",
+  "compilerVersion": "5.1.7",
+  "template": {},
+  "target": {
+    "current": "wxgame"
+  },
+  "eui": {
+    "exmlRoot": [
+      "resource/eui_skins"
+    ],
+    "themes": [
+      "resource/default.thm.json"
+    ],
+    "exmlPublishPolicy": "commonjs"
+  },
+  "modules": [
+    {
+      "name": "egret"
+    },
+    {
+      "name": "eui"
+    },
+    {
+      "name": "assetsmanager"
+    },
+    {
+      "name": "tween"
+    },
+    {
+      "name": "dragonBones"
+    },
+    {
+      "name": "socket"
+    },
+    {
+      "name": "game"
+    },
+    {
+      "name": "experimental"
+    },
+    {
+      "name": "promise"
+    }
+  ]
+}
