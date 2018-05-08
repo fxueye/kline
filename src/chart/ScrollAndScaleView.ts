@@ -337,7 +337,11 @@ namespace Chart{
 		private getTouchDistance():number{
 			let distance:number = 0;
 			let names = this.mTouchPoints["names"];
-			distance = egret.Point.distance(this.mTouchPoints[names[names.length - 1]],this.mTouchPoints[names[names.length - 2]]);
+			let p1 = this.mTouchPoints[names[names.length - 1]];
+			let p2 = this.mTouchPoints[names[names.length - 2]];
+			if(p1 != null && p2 != null){
+				distance = egret.Point.distance(p1,p2);
+			}
 			return distance;
 		}
 		public onScale(scale:number){
