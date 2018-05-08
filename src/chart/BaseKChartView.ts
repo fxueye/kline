@@ -245,6 +245,7 @@ namespace Chart{
 
 				let point:IKLine = this.getItem(this.mSelectedIndex);
 				let text = this.formatValue(point.getClosePrice());
+				labTemp.text = text;
 				let r = labTemp.height/2;
 				y = this.getMainY(point.getClosePrice());
 				let x;
