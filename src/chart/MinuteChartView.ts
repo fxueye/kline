@@ -4,7 +4,8 @@
  */
 namespace Chart{
 	export class MinuteChartView extends ScrollAndScaleView {
-		private ONE_MUNUTE:number = 60000;
+		public static ONE_MINUTE = 60000;
+		private mMinute:number = 60000;
 		private mHeight:number = 0;
 		private mWidth:number = 0;
 		private mVolumeHeight:number = 200;
@@ -81,7 +82,7 @@ namespace Chart{
 					console.error("time error!");
 					return;
 				}
-				this.mTotalTime -= this.mSecondStartTime.getTime() - this.mFirstEndTime.getTime() - this.ONE_MUNUTE;
+				this.mTotalTime -= this.mSecondStartTime.getTime() - this.mFirstEndTime.getTime() - this.mMinute;
 			}
 			this.setValueStart(yesClosePrice);
 			if(data != null){
@@ -236,7 +237,7 @@ namespace Chart{
 		private getX(position:number):number{
 			let date = this.mPoints[position].getDate();
 			if(this.mSecondStartTime != null && date.getTime() >= this.mSecondStartTime.getTime()){
-				return (date.getTime() - this.mSecondStartTime.getTime() + this.ONE_MUNUTE+this.mFirstEndTime.getTime() - this.mFirstStartTime.getTime())/this.mTotalTime * (this.mWidth - this.mPointWidth) + this.mPointWidth / 2;
+				return (date.getTime() - this.mSecondStartTime.getTime() + this.mMinute+this.mFirstEndTime.getTime() - this.mFirstStartTime.getTime())/this.mTotalTime * (this.mWidth - this.mPointWidth) + this.mPointWidth / 2;
 			}else{
 				return (date.getTime() - this.mFirstStartTime.getTime()) / this.mTotalTime * (this.mWidth - this.mPointWidth) + this.mPointWidth / 2;
 			}
@@ -287,7 +288,7 @@ namespace Chart{
 		}
 
 		private getMaxPointCount():number{
-			return this.mTotalTime/this.ONE_MUNUTE;
+			return this.mTotalTime/this.mMinute;
 		}
 
 		public onLongPress(evt:egret.TouchEvent){

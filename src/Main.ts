@@ -104,60 +104,60 @@ class Main extends eui.UILayer {
      */
     protected createGameScene(): void {
         
-        // var chartView:Chart.KChartView = new Chart.KChartView();
-        // var adapter = new KChartAdapter();
-        // var datas:Array<KLineEntity> = new Array<KLineEntity>();
-        // var jsonArr = RES.getRes("ibm_json");
-        // for(var js of jsonArr){
-        //    let data:KLineEntity = new KLineEntity();
-        //    data.pase(js);
-        //    datas.push(data);
-        // }
-        // Chart.DataHelperUtil.calculate(datas);
-        // adapter.addFooterData(datas);
-        // chartView.setAdapter(adapter);
-        // chartView.setDateTimeFormatter(new Chart.DateFormatter());
-        // chartView.setGridRows(4);
-        // chartView.setGridColumns(4);
-        // chartView.setTabViewWidth(25);
+        var chartView:Chart.KChartView = new Chart.KChartView();
+        var adapter = new KChartAdapter();
+        var datas:Array<KLineEntity> = new Array<KLineEntity>();
+        var jsonArr = RES.getRes("ibm_json");
+        for(var js of jsonArr){
+           let data:KLineEntity = new KLineEntity();
+           data.pase(js);
+           datas.push(data);
+        }
+        Chart.DataHelperUtil.calculate(datas);
+        adapter.addFooterData(datas);
+        chartView.setAdapter(adapter);
+        chartView.setDateTimeFormatter(new Chart.DateFormatter());
+        chartView.setGridRows(4);
+        chartView.setGridColumns(4);
+        chartView.setTabViewWidth(25);
 
-        // chartView.width = this.width;
-        // chartView.height = this.height/2;
-        // chartView.y = this.height / 2;
-        // this.addChild(chartView);
+        chartView.width = this.width;
+        chartView.height = this.height/2;
+        chartView.y = this.height / 2;
+        this.addChild(chartView);
 
-        // this.minuteChartView = new Chart.MinuteChartView();
-        // this.minuteChartView2 = new Chart.MinuteChartView();
-        // this.minuteChartView.setVolumeHeight(100);
-        // this.minuteChartView2.setVolumeHeight(100);
-        // this.minuteChartView.width = this.width / 2 ;
-        // this.minuteChartView.height = this.height / 2;
+        this.minuteChartView = new Chart.MinuteChartView();
+        this.minuteChartView2 = new Chart.MinuteChartView();
+        this.minuteChartView.setVolumeHeight(100);
+        this.minuteChartView2.setVolumeHeight(100);
+        this.minuteChartView.width = this.width / 2 ;
+        this.minuteChartView.height = this.height / 2;
 
-        // this.minuteChartView2.width = this.width / 2;
-        // this.minuteChartView2.height = this.height / 2;
+        this.minuteChartView2.width = this.width / 2;
+        this.minuteChartView2.height = this.height / 2;
 
-        // this.minuteChartView2.x = this.width / 2;
+        this.minuteChartView2.x = this.width / 2;
 
 
 
-        // let startTime = new Date("1970-01-01 09:30");
-        // let endTime = new Date("1970-01-01 15:00");
-        // let firstEndTime = new Date("1970-01-01 11:30");
-        // let secondStartTime = new Date("1970-01-01 13:00");
-        // this.mdatas = this.getMinuteData(startTime,endTime,firstEndTime,secondStartTime);
-        // let ds2 = new Array<Chart.IMinuteLine>();
-        // for(var i = 0 ; i < this.mdatas.length; i++){
-        //     ds2.push(this.mdatas[this.mdatas.length - i - 1]);
-        // }
-        // let ds = new Array<Chart.IMinuteLine>();
-        // this.mTimer = new egret.Timer(500,0);
-        // this.mTimer.addEventListener(egret.TimerEvent.TIMER,this.timeFunc,this);
-        // this.mTimer.start();
-        // let yesClosePrice = this.mdatas[0].getPrice() - 0.5 + Math.random();
-        // this.minuteChartView2.initData(ds2,startTime,endTime,firstEndTime,secondStartTime,yesClosePrice)
-        // this.minuteChartView.initData(ds,startTime,endTime,firstEndTime,secondStartTime,yesClosePrice);
-        // this.addChild(this.minuteChartView);
-        // this.addChild(this.minuteChartView2);
+        let startTime = new Date("1970-01-01 09:30");
+        let endTime = new Date("1970-01-01 15:00");
+        let firstEndTime = new Date("1970-01-01 11:30");
+        let secondStartTime = new Date("1970-01-01 13:00");
+        this.mdatas = this.getMinuteData(startTime,endTime,firstEndTime,secondStartTime);
+        let ds2 = new Array<Chart.IMinuteLine>();
+        for(var i = 0 ; i < this.mdatas.length; i++){
+            ds2.push(this.mdatas[this.mdatas.length - i - 1]);
+        }
+        let ds = new Array<Chart.IMinuteLine>();
+        this.mTimer = new egret.Timer(500,0);
+        this.mTimer.addEventListener(egret.TimerEvent.TIMER,this.timeFunc,this);
+        this.mTimer.start();
+        let yesClosePrice = this.mdatas[0].getPrice() - 0.5 + Math.random();
+        this.minuteChartView2.initData(ds2,startTime,endTime,firstEndTime,secondStartTime,yesClosePrice)
+        this.minuteChartView.initData(ds,startTime,endTime,firstEndTime,secondStartTime,yesClosePrice);
+        this.addChild(this.minuteChartView);
+        this.addChild(this.minuteChartView2);
 
     }
     public timeFunc(){
