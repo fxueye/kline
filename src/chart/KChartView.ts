@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export class KChartView extends BaseKChartView {
 		private isRefreshing:boolean = false;
 		private isLoadMoreEnd:boolean = false;
@@ -59,16 +63,16 @@ namespace chart{
 			this.setMa5Color(Color.MA5);
 			this.setMa10Color(Color.MA10);
 			this.setMa20Color(Color.MA20);
+			this.setSelectorBackgroundColor(Color.SELECT_BACK_GROUND);
 			
 			this.setCandleWidth(12);
 			this.setCandleLineWidth(3);
 			this.setCandleSolid(true);
-			this.mKChartTabView.dataProvider = new eui.ArrayCollection(this.mTabNames);
-			this.mKChartTabView.itemRenderer = TabView;
-			this.mKChartTabView.selectedItem = 0;
-			this.setChildDraw(0);
+			
 
-
+		}
+		protected onAddedToStage(){
+			super.onAddedToStage();
 		}
 		public setRsi1Color(color:number){
 			this.mRSIDraw.setRsi1Color(color);
@@ -174,6 +178,9 @@ namespace chart{
 		public onScaleChanged():void{
 			this.checkAndFixScrollX();
 			this.setTranslateXFromScrollX(this.mScrollX);
+		}
+		public setSelectorBackgroundColor(color:number){
+			this.mMainDraw.setSelectorBackgroundColor(color);
 		}
 
 	}

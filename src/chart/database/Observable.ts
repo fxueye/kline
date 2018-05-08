@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export abstract class Observable<T> {
 		protected mObservers:Array<T> = new Array<T>();
 		public constructor() {

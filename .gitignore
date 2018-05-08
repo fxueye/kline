@@ -1,0 +1,5 @@
+#egret 临时文件
+bin-debug/
+bin-release/
+.wing/
+.idea

@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export abstract class BaseKChartView extends ScrollAndScaleView {
 		private mChildDrawPosition:number = 0;
 		private mTranslateX:number = Number.MIN_VALUE;
@@ -23,7 +27,7 @@ namespace chart{
 		private mTextSize:number;
 		private mBackgroundColor:number = Color.BACK_GROUND;
 		private mTabBarBackgroundColor:number = Color.TAB_BACK_GROUND;
-		private mSelectedLineColor:number;
+		private mSelectedLineColor:number= Color.TEXT;
 		private mSelectedIndex:number;
 		private mBMainDraw:IChartDraw<any>;
 		private mAdapter:IAdapter;
@@ -46,8 +50,10 @@ namespace chart{
 		private mBtnUp:eui.Button;
 		private mBtnDown:eui.Button;
 
+		
 
-		private mTabViewWidth:number = 50;
+
+		private mTabViewHeight:number = 50;
 
 		public constructor() {
 			super();
@@ -57,36 +63,47 @@ namespace chart{
 		private init(){
 			this.mTabNames = new Array<string>();
 			this.mTopPadding = 15;
-			this.mBottomPadding = 15;
+			this.mBottomPadding = 15;			
 			this.mKChartTabView = new KChartTabView();
-			this.mKChartTabView.height = this.mTabViewWidth;
 			this.mBtnLeft = new eui.Button();
-			this.mBtnLeft.label = "←";
-			this.mBtnLeft.height = this.mTabViewWidth;
 			this.mBtnRight = new eui.Button();
-			this.mBtnRight.label = "→";
-			this.mBtnRight.height = this.mTabViewWidth;
 			this.mBtnUp = new eui.Button();
-			this.mBtnUp.label = "^";
-			this.mBtnUp.height = this.mTabViewWidth / 2;
 			this.mBtnDown = new eui.Button();
+		}
+		protected onAddedToStage(){
+			
+			this.mKChartTabView.height = this.mTabViewHeight;
+			this.mBtnLeft.label = "←";
+			this.mBtnLeft.height = this.mTabViewHeight;
+			this.mBtnRight.label = "→";
+			this.mBtnRight.height = this.mTabViewHeight;
+
+			this.mBtnUp.label = "^";
+			this.mBtnUp.height = this.mTabViewHeight / 2;
+			
 			this.mBtnDown.label = "^";
-			this.mBtnDown.height = this.mTabViewWidth / 2;
+			this.mBtnDown.height = this.mTabViewHeight / 2;
 
 			
-
-		}
-		private onAddedToStage(){
 			this.addChild(this.mKChartTabView);
 			this.addChild(this.mBtnRight);
 			this.addChild(this.mBtnLeft);
 			this.addChild(this.mBtnUp);
 			this.addChild(this.mBtnDown);
+
+	
+
 			this.mBtnRight.addEventListener(egret.TouchEvent.TOUCH_TAP,this.onRight,this);
 			this.mBtnLeft.addEventListener(egret.TouchEvent.TOUCH_TAP,this.onLeft,this);
 			this.mBtnUp.addEventListener(egret.TouchEvent.TOUCH_TAP,this.onUp,this);
 			this.mBtnDown.addEventListener(egret.TouchEvent.TOUCH_TAP,this.onDown,this);
 			this.onSizeChanged();
+
+			this.mKChartTabView.dataProvider = new eui.ArrayCollection(this.mTabNames);
+			this.mKChartTabView.itemRenderer = TabView;
+			this.mKChartTabView.selectedItem = 0;
+			this.setChildDraw(0);
+
 		}
 		private onSizeChanged(){
 
@@ -209,6 +226,10 @@ namespace chart{
 					this.drawText(columnSpace * i - labTemp.width/2,y,text,this.mTextSize,this.mTextColor);
 				}
 			}
+
+
+			
+
 			let translateX =this.xToTranslateX(0);
 			if(translateX >= startX && translateX <= stopX){
 				let text = this.formatDateTime(this.getAdapter().getDate(this.mStartIndex));
@@ -221,13 +242,13 @@ namespace chart{
 				this.drawText(this.mWidth - labTemp.width,y,text,this.mTextSize,this.mTextColor);
 			}
 			if(this.isLongPress){
-				//TODO
+
 				let point:IKLine = this.getItem(this.mSelectedIndex);
 				let text = this.formatValue(point.getClosePrice());
 				let r = labTemp.height/2;
 				y = this.getMainY(point.getClosePrice());
 				let x;
-				if(this.translateXtoX(this.mSelectedIndex) < this.getChartWidth()/2){
+				if(this.translateXtoX(this.getX(this.mSelectedIndex)) < this.getChartWidth()/2){
 					x = 0;
 					this.drawRect(x,y - r,labTemp.width,y + r,this.mBackgroundColor);
 				}else{
@@ -240,6 +261,8 @@ namespace chart{
 
 		}
 		private drawK(){
+			this.save();
+			this.scale(this.mScaleX,1);
 			this.translate(this.mTranslateX * this.mScaleX ,0);
 			for(var i = this.mStartIndex; i <= this.mStopIndex; i++){
 				let currentPoint = this.getItem(i);
@@ -253,7 +276,6 @@ namespace chart{
 					this.mChildDraw.drawTranslated(lastPoint,currentPoint,lastX,currentPointX,i);
 				}
 			}
-			//TODO 暂时未实现
 			if(this.isLongPress){
 				let point:IKLine = this.getItem(this.mSelectedIndex);
 				let x = this.getX(this.mSelectedIndex);
@@ -262,19 +284,14 @@ namespace chart{
 				this.drawLine(-this.mTranslateX,y,-this.mTranslateX + this.mWidth / this.mScaleX,y,this.mLineWidth,this.mSelectedLineColor);
 				this.drawLine(x,this.mChildRect.top,x,this.mChildRect.bottom,this.mLineWidth,this.mSelectedLineColor);
 			}
+			this.restore();
 
 		}
 		private drawBackGround(){
-			let oldScaleX = this.mScaleX;
-			this.mScaleX = 1;
 			this.drawRect(0,0,this.mWidth,this.height,this.mBackgroundColor,true);
 			this.drawRect(0,this.mTabRect.top,this.mTabRect.right,this.mTabRect.bottom,this.mTabBarBackgroundColor,true);
-			this.mScaleX = oldScaleX;
 		}
 		private drawGird(){
-			//scale 不缩放
-			let oldScaleX = this.mScaleX;
-			this.mScaleX = 1;
 			let rowSpace = this.mMainRect.height()/this.mGridRows;
 			for(var i = 0; i <= this.mGridRows; i++){
 				this.drawLine(0,rowSpace * i + this.mMainRect.top, this.mWidth,rowSpace * i + this.mMainRect.top,this.mGridLineWidth,this.mGridColor,true);
@@ -286,7 +303,6 @@ namespace chart{
 				this.drawLine(columnSpace * i,this.mMainRect.top,columnSpace * i,this.mMainRect.bottom,this.mGridLineWidth,this.mGridColor,true);
 				this.drawLine(columnSpace * i,this.mChildRect.top,columnSpace * i,this.mChildRect.bottom,this.mGridLineWidth,this.mGridColor,true);
 			}
-			this.mScaleX = oldScaleX;
 		}
 		private calculateValue(){
 			if(!this.isLongPress){
@@ -357,7 +373,7 @@ namespace chart{
 		public onLongPress(evt:egret.TouchEvent){
 			super.onLongPress(evt);
 			let lastIndex = this.mSelectedIndex;
-			this.calculateSelectedX(evt.stageX);
+			this.calculateSelectedX(evt.stageX - this.x);
 			this.invalidate();
 		}
 
@@ -564,6 +580,13 @@ namespace chart{
 		}
 		public getTextColor():number{
 			return this.mTextColor;
+		}
+		public getSelectedIndex():number{
+			return this.mSelectedIndex;
+		}
+		public setTabViewWidth(width:number){
+			if(this.mTabViewHeight < width)
+				this.mTabViewHeight = width;
 		}
 	}
 	class Dso extends DataSetObserver{

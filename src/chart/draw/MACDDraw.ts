@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export class MACDDraw implements IChartDraw<IMACD> {
 		private mRedColor:number = Color.RED;
 		private mGreenColor:number = Color.GREEN;

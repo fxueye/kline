@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export class MainDraw implements IChartDraw<ICandle> {
 		private mCandleWidth:number = 0;
 		private mCandleLineWidth:number = 0;
@@ -10,9 +14,9 @@ namespace chart{
 		private mLineWidth:number = 1;
 		private mTextSize:number = 12;
 
-		private mSelectorTextColor:number;
-		private mSelectorBackground:number;
-		private mSelectorTextSize:number;
+		private mSelectorTextColor:number = Color.WHITE;
+		private mSelectorBackground:number = Color.SELECT_BACK_GROUND;
+		private mSelectorTextSize:number = 12;
 
 		private mCandleSolid:boolean = true;
 
@@ -46,7 +50,7 @@ namespace chart{
 			text = "MA20:" + this.mView.formatValue(point.getMA20Price()) +" ";
 			this.mView.drawText(x,y,text,this.mTextSize,this.ma20Color);
 			if(this.mView.isLongPress){
-				
+				this.drawSelector();
 			}
 		}
 		getMaxValue(point:ICandle):number{
@@ -118,14 +122,50 @@ namespace chart{
 				this.mView.drawRect(x - r,open,x + r,close,this.mGreenColor);
 				this.mView.drawRect(x - lineR,high,x + lineR,low,this.mGreenColor);
 			}else{
-				// this.mView.drawRect(x - r,open,x + r,close + 1,this.mRedColor);
-				// this.mView.drawRect(x - lineR,high,x + lineR, low,this.mRedColor);
+				this.mView.drawRect(x - r,open,x + r,close + 1,this.mRedColor);
+				this.mView.drawRect(x - lineR,high,x + lineR, low,this.mRedColor);
 			}
 
 		}
 		//先择器
 		private drawSelector(){
-			//TODO
+			let texTemp = new egret.TextField();
+			texTemp.text = '0';
+			texTemp.size = this.mView.getTextSize();
+			let index = this.mView.getSelectedIndex();
+			let padding = 5;
+			let margin = 5;
+			let width = 0;
+			let left = 0;
+			let top = margin + this.mView.getTopPadding();
+			let height = padding * 8 + texTemp.height * 5;
+
+			let point:ICandle = <ICandle>this.mView.getItem(index);
+			let strs:Array<string> = new Array<string>();
+			strs.push(this.mView.formatDateTime(this.mView.getAdapter().getDate(index)));
+			strs.push("H:" + this.getValueFormatter().format(point.getHighPrice()));
+			strs.push("L:" + this.getValueFormatter().format(point.getLowPrice()));
+			strs.push("O:" + this.getValueFormatter().format(point.getOpenPrice()));
+			strs.push("C:" + this.getValueFormatter().format(point.getClosePrice()));
+			for(var i = 0; i < strs.length; i++){
+				texTemp.text = strs[i];
+				width = Math.max(width,texTemp.width);
+			}
+			width += padding * 2;
+			let x = this.mView.translateXtoX(this.mView.getX(index));
+			if(x > this.mView.getChartWidth() / 2){
+				left = margin;
+			}else{
+				left = this.mView.getChartWidth() - width - margin;
+			}
+			this.mView.translate(0,0);
+			this.mView.drawRect(left,top,left + width,top + height,this.mSelectorBackground);
+			let y = top + padding * 2 + texTemp.height/2;
+			for(var s of strs){
+				this.mView.drawText(left + padding,y,s,this.mSelectorTextSize,this.mSelectorTextColor);
+				y += texTemp.height + padding;
+			}
+
 		}
 	}
 }

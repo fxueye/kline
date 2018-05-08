@@ -93,34 +93,145 @@ class Main extends eui.UILayer {
 
         })
     }
-
+    private mdatas:Array<Chart.IMinuteLine>;
+    private minuteChartView:Chart.MinuteChartView;
+    private minuteChartView2:Chart.MinuteChartView;
     private textfield: egret.TextField;
+    private mTimer:egret.Timer;
     /**
      * 创建场景界面
      * Create scene interface
      */
     protected createGameScene(): void {
         
-        var chartView:chart.KChartView = new chart.KChartView();
-        var adapter = new KChartAdapter();
-        var datas:Array<KLineEntity> = new Array<KLineEntity>();
-        var jsonArr = RES.getRes("ibm_json");
-        for(var js of jsonArr){
-           let data:KLineEntity = new KLineEntity();
-           data.pase(js);
-           datas.push(data);
+        // var chartView:Chart.KChartView = new Chart.KChartView();
+        // var adapter = new KChartAdapter();
+        // var datas:Array<KLineEntity> = new Array<KLineEntity>();
+        // var jsonArr = RES.getRes("ibm_json");
+        // for(var js of jsonArr){
+        //    let data:KLineEntity = new KLineEntity();
+        //    data.pase(js);
+        //    datas.push(data);
+        // }
+        // Chart.DataHelperUtil.calculate(datas);
+        // adapter.addFooterData(datas);
+        // chartView.setAdapter(adapter);
+        // chartView.setDateTimeFormatter(new Chart.DateFormatter());
+        // chartView.setGridRows(4);
+        // chartView.setGridColumns(4);
+        // chartView.setTabViewWidth(25);
+
+        // chartView.width = this.width;
+        // chartView.height = this.height/2;
+        // chartView.y = this.height / 2;
+        // this.addChild(chartView);
+
+        // this.minuteChartView = new Chart.MinuteChartView();
+        // this.minuteChartView2 = new Chart.MinuteChartView();
+        // this.minuteChartView.setVolumeHeight(100);
+        // this.minuteChartView2.setVolumeHeight(100);
+        // this.minuteChartView.width = this.width / 2 ;
+        // this.minuteChartView.height = this.height / 2;
+
+        // this.minuteChartView2.width = this.width / 2;
+        // this.minuteChartView2.height = this.height / 2;
+
+        // this.minuteChartView2.x = this.width / 2;
+
+
+
+        // let startTime = new Date("1970-01-01 09:30");
+        // let endTime = new Date("1970-01-01 15:00");
+        // let firstEndTime = new Date("1970-01-01 11:30");
+        // let secondStartTime = new Date("1970-01-01 13:00");
+        // this.mdatas = this.getMinuteData(startTime,endTime,firstEndTime,secondStartTime);
+        // let ds2 = new Array<Chart.IMinuteLine>();
+        // for(var i = 0 ; i < this.mdatas.length; i++){
+        //     ds2.push(this.mdatas[this.mdatas.length - i - 1]);
+        // }
+        // let ds = new Array<Chart.IMinuteLine>();
+        // this.mTimer = new egret.Timer(500,0);
+        // this.mTimer.addEventListener(egret.TimerEvent.TIMER,this.timeFunc,this);
+        // this.mTimer.start();
+        // let yesClosePrice = this.mdatas[0].getPrice() - 0.5 + Math.random();
+        // this.minuteChartView2.initData(ds2,startTime,endTime,firstEndTime,secondStartTime,yesClosePrice)
+        // this.minuteChartView.initData(ds,startTime,endTime,firstEndTime,secondStartTime,yesClosePrice);
+        // this.addChild(this.minuteChartView);
+        // this.addChild(this.minuteChartView2);
+
+    }
+    public timeFunc(){
+        if(this.mdatas.length == 0){
+            this.mTimer.stop();
+            return;
         }
-        DataHelper.calculate(datas);
-        adapter.addFooterData(datas);
-        chartView.setAdapter(adapter);
-        chartView.setDateTimeFormatter(new chart.DateFormatter());
-        chartView.setGridRows(4);
-        chartView.setGridColumns(4);
-
-        chartView.width = this.width;
-        chartView.height = this.height;
-        this.addChild(chartView);
-
+        this.minuteChartView.addPoint(this.mdatas.pop());
+    }
+    private getMinuteData(startTime:Date,endTime:Date,firstEndTime:Date,secondStartTime:Date):Array<Chart.IMinuteLine>{
+        let datas:Array<MinuteLineEntity>  = Array<MinuteLineEntity>();
+        let startDate = startTime.getTime();
+        if(firstEndTime == null && secondStartTime == null){
+            while(startDate <=  endTime.getTime()){
+                let data:MinuteLineEntity = new MinuteLineEntity();
+                data.time = new Date(startDate);
+                startDate += 60000;
+                datas.unshift(data);
+            }
+        }else{
+            while(startDate <= firstEndTime.getTime()){
+                let data:MinuteLineEntity = new MinuteLineEntity();
+                data.time = new Date(startDate);
+                startDate += 60000;
+                datas.unshift(data);
+            }
+            startDate = secondStartTime.getTime();
+            while(startDate <= endTime.getTime()){
+                let data:MinuteLineEntity = new MinuteLineEntity();
+                data.time = new Date(startDate);
+                startDate += 60000;
+                datas.unshift(data);
+            }
+        }
+        this.randomLine(datas);
+        this.randomVolume(datas);
+        let sum = 0;
+        for(var i = 0; i < datas.length;i++){
+            let data:MinuteLineEntity = datas[i];
+            sum+= data.price;
+            data.avg = sum/(i+1);
+        }
+        return datas;
+    }
+    private randomLine(datas:Array<MinuteLineEntity>){
+        let STEP_MAX = 0.9;
+        let STEP_CHANGE = 1;
+        let HEIGHT_MAX = 200;
+        let height = (Math.random() * HEIGHT_MAX);
+        let slope = (Math.random() * 2 - STEP_MAX);
+        for(var i = 0; i < datas.length;i++){
+            height += slope;
+            slope += (Math.random() * STEP_CHANGE) * 2 - STEP_MAX;
+            if(slope > STEP_MAX){
+                slope = STEP_MAX;
+            }
+            if(slope < -STEP_MAX){
+                slope = -STEP_MAX;
+            }
+            if(height > HEIGHT_MAX){
+                height = HEIGHT_MAX;
+                slope *= -1;
+            }
+            if(height > 0){
+                height = 0;
+                slope *= -1;
+            }
+            datas[i].price = height + 1000;
+        }
+    }
+    private randomVolume(datas:Array<MinuteLineEntity>){
+        for(var data of datas){
+            data.volume = Math.floor(Math.random() * Math.random() * Math.random() * Math.random() * 10000000);
+        }
     }
     /**
      * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。

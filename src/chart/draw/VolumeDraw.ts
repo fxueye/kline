@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export class VolumeDraw implements IChartDraw<IVolume> {
 		private mView:BaseKChartView;
 		private mRedColor:number = Color.RED;

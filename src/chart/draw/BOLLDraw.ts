@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export class BOLLDraw implements IChartDraw<IBOLL>{
 		private mUpColor:number = 0xFFFFFF;
 		private mMbColor:number = 0xFFFFFF;

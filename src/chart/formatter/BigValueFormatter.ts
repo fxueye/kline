@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export class BigValueFormatter implements IValueFormatter {
 		private values:number[] = [10000,1000000,100000000];
 		private units:string[] = ["万","百万","亿"];

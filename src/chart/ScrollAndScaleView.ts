@@ -1,4 +1,8 @@
-namespace chart{
+/**
+ * created by skw 2018/5/8
+ * 281431280@qq.com
+ */
+namespace Chart{
 	export abstract class ScrollAndScaleView extends egret.DisplayObjectContainer {
 		private mBgLayer:egret.DisplayObjectContainer;
 		private mTextLayer:egret.DisplayObjectContainer;
@@ -30,8 +34,16 @@ namespace chart{
 		private mBgLineShpe:egret.Shape;
 		
 		protected mScrollX:number = 0;
-
 		protected mScaleX:number = 1;
+		//绘图用
+		private mDrawScaleX:number = 1; 
+		private mDrawScaleY:number = 1;// 暂时无用不做y 缩放
+
+		private mTempScrollX:number = 0;
+		private mTempScaleX:number = 1;
+		private mTempDx:number = 0;
+		private mTempDy:number = 0;
+
 		protected mScaleMax:number = 2;
 		protected mScaleMin:number = 0.5;  
 
@@ -66,13 +78,13 @@ namespace chart{
 		private onAddToStage():void{
 			this.mBgLayer.width = this.width;
 			this.mBgLayer.height = this.height;
-			this.addChild(this.mBgLayer);
 			this.mTextLayer.width = this.width;
 			this.mTextLayer.height = this.height;
-			this.addChild(this.mTextLayer);
 			this.mDrawLayer.width = this.width;
 			this.mDrawLayer.height  = this.height;
+			this.addChild(this.mBgLayer);
 			this.addChild(this.mDrawLayer);
+			this.addChild(this.mTextLayer);
 			this.mTopLayer.width = this.width;
 			this.mTopLayer.height = this.height;
 			// this.mTopLayer.touchEnabled = true;
@@ -98,11 +110,27 @@ namespace chart{
 			this.mDx = dx;
 			this.mDy = dy;
 		}
+		public save(){
+			this.mTempScrollX = this.mScrollX;
+			this.mTempScaleX = this.mDrawScaleX;
+			this.mTempDx = this.mDx;
+			this.mTempDy = this.mDy;
+		}
+		public restore(){
+			this.mScrollX = this.mTempScrollX;
+			this.mDrawScaleX = this.mTempScaleX;
+			this.mDx = this.mTempDx;
+			this.mDy = this.mTempDy;
+		}
+		public scale(x:number,y:number){
+			this.mDrawScaleX = x;
+			this.mDrawScaleY = y;
+		}
 		public drawText(x:number,y:number,text:string,size:number = 12,color:number = 0xFFFFFF):egret.TextField{
 			let textLab = new egret.TextField();
 			textLab.text = text;
-			textLab.x = x;
-			textLab.y = y;
+			textLab.x = x * this.mDrawScaleX + this.mDx;
+			textLab.y = y * this.mDrawScaleY + this.mDy;
 			textLab.textColor = color;
 			textLab.size = size;
 			this.mTextLayer.addChild(textLab);
@@ -116,8 +144,8 @@ namespace chart{
 			}
 			// shape = new egret.Shape();
 			shape.graphics.lineStyle(thickness,color);
-			shape.graphics.moveTo(startX * this.mScaleX + this.mDx,startY + this.mDy);
-			shape.graphics.lineTo(stopX * this.mScaleX + this.mDx,stopY + this.mDy);
+			shape.graphics.moveTo(startX * this.mDrawScaleX + this.mDx,startY * this.mDrawScaleY + this.mDy);
+			shape.graphics.lineTo(stopX * this.mDrawScaleX + this.mDx,stopY * this.mDrawScaleY + this.mDy);
 			shape.graphics.endFill();
 			if(!isBg)
 				this.mDrawLayer.addChild(shape);
@@ -128,7 +156,7 @@ namespace chart{
 			// console.log("draw rect:",left,top,right,bottom,color);
 			let shape = new egret.Shape();
 			shape.graphics.beginFill(color,1);
-			shape.graphics.drawRect(left * this.mScaleX + this.mDx,top + this.mDy,(right - left) * this.mScaleX,bottom - top);
+			shape.graphics.drawRect(left * this.mDrawScaleX + this.mDx,top * this.mDrawScaleY + this.mDy,(right - left) * this.mDrawScaleX,(bottom - top) * this.mDrawScaleY);
 			shape.graphics.endFill();
 			if(!isBg)
 				this.mDrawLayer.addChild(shape);
@@ -287,8 +315,10 @@ namespace chart{
 			}
 			
 			//手势缩放
-			this.mTouchPoints[evt.touchPointID].x = evt.stageX;
-			this.mTouchPoints[evt.touchPointID].y = evt.stageY;
+			if(this.mTouchPoints[evt.touchPointID] != null){
+				this.mTouchPoints[evt.touchPointID].x = evt.stageX;
+				this.mTouchPoints[evt.touchPointID].y = evt.stageY;
+			}
 			if(this.mTouchCon == 2){
 				let newdistance = this.getTouchDistance();
 				let scale = newdistance/ this.mDistance;
@@ -313,6 +343,7 @@ namespace chart{
 		public onScale(scale:number){
 			this.scaleTo(scale);
 		}
+		
 		protected onTouchTap(evt:egret.TouchEvent){
 			// console.log(evt);
 			// console.log(evt.stageX);
